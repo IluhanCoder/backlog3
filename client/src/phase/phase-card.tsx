@@ -41,7 +41,7 @@ const PhaseCard = ({phase, rights, callBack, isActive = true}: LocalParams) => {
     }
 
     const handleAssign = (task: TaskResponse) => {
-        formStore.setForm(<AssignForm task={task} projectId={phase.projectId} callBack={getTasks}/>)
+        formStore.setForm(<AssignForm task={task} projectId={phase.projectId} callBack={() => {if(callBack) callBack(); getTasks()}}/>)
     }
 
     const handleDelete = async (taskId: string) => {
@@ -71,13 +71,13 @@ const PhaseCard = ({phase, rights, callBack, isActive = true}: LocalParams) => {
 
     const handleAssignCharge = async () => {
         formStore.setForm(<AssignPhaseForm phase={phase} callBack={getTasks}/>)
+        if (callBack) callBack();
     }
 
     const getTasksAnalytics = async () => {
         const extraDate = new Date();
         extraDate.setMonth(extraDate.getMonth() - 1);
         const result = await analyticsService.phaseTaskRatio(phase.projectId, extraDate, new Date(), true, undefined, phase._id);
-        console.log(result);
         setTasksRatioData([...result.result]);
     }
 
@@ -89,7 +89,7 @@ const PhaseCard = ({phase, rights, callBack, isActive = true}: LocalParams) => {
         getTasksAnalytics();
     }, [])
 
-    if(phase) return <div className={BlockStyle + ` flex flex-col gap-4 ${(new Date(phase.endDate)).getTime() > (new Date()).getTime() ? "border-2 border-red-500" : isActive ? "" : "bg-stone-200"}`}>
+    if(phase) return <div className={BlockStyle + ` flex flex-col gap-4 ${(new Date(phase.endDate)).getTime() < (new Date()).getTime() ? "border-2 border-red-500" : ""} ${isActive ? "" : "bg-gray-200"}`}>
         <div className="flex w-full ">
             <div className="flex flex-col gap-2 grow">
                 <div className="flex justify-center text-4xl font-thin">{`${phase.index + 1 + ". " + phase.name}`}</div>
@@ -117,17 +117,17 @@ const PhaseCard = ({phase, rights, callBack, isActive = true}: LocalParams) => {
                     {tasks && <PhaseTasksMapper isActive={isActive} callBack={async () => { await getTasksAnalytics(); await getTasks(); if(callBack) await callBack(); }} rights={rights} tasks={tasks} detailsHandler={detailsHandler} assignHandler={handleAssign} deleteHandler={handleDelete}/>
                     || <LoadingScreen/>}
                 </div>
-                <div className="flex justify-center">
+                {rights.create && <div className="flex justify-center">
                     <button type="button" className={submitButtonStyle} onClick={handleNewTask}>
                         додати завдання
                     </button>
-                </div>
+                </div>}
             </div>
             <div className="flex flex-col justify-center mb-10">
                 <div className="flex justify-center">
                     <div className="flex flex-col gap-2">
                         <div className="text-center">Ефективність виконання задач</div>
-                        <AnalyticsGraph width={500} height={200} data={convertArray(tasksRatioData)} name="%"/>
+                        <AnalyticsGraph width={400} height={200} data={convertArray(tasksRatioData)} name="%"/>
                     </div>
                 </div>
             </div>

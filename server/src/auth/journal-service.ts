@@ -42,8 +42,9 @@ export default new class JournalService  {
 // Function to get task completion stats by day, including zero-count days
     async getDoneStatistics(userId: string) {
         const daysOfCurrentMonth = this.getDaysOfCurrentMonth();
-        const startOfMonth = daysOfCurrentMonth[0];
-        const endOfMonth = daysOfCurrentMonth[daysOfCurrentMonth.length - 1];
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        const endOfMonth = now;
 
         const dailyStats = await journalModel.aggregate([
             { 
@@ -68,8 +69,20 @@ export default new class JournalService  {
             }
     ]);
 
+    const getDaysInRange = (start: Date, end: Date): Date[] => {
+        const days = [];
+        const date = new Date(start);
+        while (date <= end) {
+            days.push(new Date(date));
+            date.setDate(date.getDate() + 1);
+        }
+        return days;
+    };
+
+    const daysInRange = getDaysInRange(startOfMonth, endOfMonth);
+
     // Combine stats with all days of the month
-    return daysOfCurrentMonth.map(date => {
+    return daysInRange.map(date => {
         const day = date.getDate();
         const month = date.getMonth() + 1;
         const stat = dailyStats.find(stat => stat.day === day);
@@ -79,8 +92,9 @@ export default new class JournalService  {
 
 async getDailyLoginStats(userId: string) {
     const daysOfCurrentMonth = this.getDaysOfCurrentMonth();
-    const startOfMonth = daysOfCurrentMonth[0];
-    const endOfMonth = daysOfCurrentMonth[daysOfCurrentMonth.length - 1];
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+    const endOfMonth = now;
 
     const dailyStats = await journalModel.aggregate([
         { 
@@ -105,8 +119,21 @@ async getDailyLoginStats(userId: string) {
         }
     ]);
 
+    const getDaysInRange = (start: Date, end: Date): Date[] => {
+        const days = [];
+        const date = new Date(start);
+        while (date <= end) {
+            days.push(new Date(date));
+            date.setDate(date.getDate() + 1);
+        }
+        return days;
+    };
+
     // Combine stats with all days of the month
-    return daysOfCurrentMonth.map(date => {
+    const daysInRange = getDaysInRange(startOfMonth, endOfMonth);
+
+    // Combine stats with all days of the month
+    return daysInRange.map(date => {
         const day = date.getDate();
         const month = date.getMonth() + 1;
         const stat = dailyStats.find(stat => stat.day === day);

@@ -606,16 +606,24 @@ export default new class AnalyticsService {
       
         return stats.map(entry => {
           // Filter tasks created up to the current entry's month or day
-          const tasksUntilNow = tasks.filter(task =>
-            this.isBeforeOrSame(task.created, new Date(entry.year, entry.month - 1, entry.day || 1))
+          const tasksUntilNow = tasks.filter(task => {
+              return this.isBeforeOrSame(task.created, new Date(entry.year, entry.month - 1, entry.day || 1))
+            }
           );
+
+          console.log(new Date(entry.year, entry.month - 1, entry.day || 1));
       
-          const doneTasks = tasksUntilNow.filter(task => task.status === "done").length;
+          const doneTasks = tasksUntilNow.filter(task => (task.status === "done" && this.isBeforeOrSame(task.checkedDate, new Date(entry.year, entry.month - 1, entry.day || 1)))).length;
           cumulativeDone = doneTasks; // Update cumulative done count
           cumulativeTotal = tasksUntilNow.length; // Update total tasks count
+
+          console.log("done: " + cumulativeDone);
+          console.log("total: " + cumulativeTotal);
       
           // Calculate the ratio (percentage of done tasks)
           const ratio = cumulativeTotal > 0 ? (cumulativeDone / cumulativeTotal) * 100 : 0;
+
+          console.log("ratio: " + ratio);
       
           return { ...entry, amount: ratio };
         });
@@ -623,8 +631,8 @@ export default new class AnalyticsService {
       
       private isBeforeOrSame(date1: Date, date2: Date): boolean {
         return (
-          date1.getFullYear() < date2.getFullYear() ||
-          (date1.getFullYear() === date2.getFullYear() && date1.getMonth() <= date2.getMonth())
+          date1.getMonth() < date2.getMonth() ||
+          (date1.getMonth() === date2.getMonth() && date1.getDate() <= date2.getDate())
         );
       }
       

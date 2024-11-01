@@ -102,7 +102,7 @@ function ProjectPage () {
         getUserRights();
     }, [project]);
 
-    return <div className="flex w-full bg-stone-100 h-full">
+    return <div className="flex w-full bg-stone-100 h-fit">
         {project && <div className="flex w-full ">
             <div className="p-2">
                 <div className="p-2 flex flex-col gap-2 bg-white rounded shadow">

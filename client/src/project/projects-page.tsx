@@ -40,7 +40,7 @@ function ProjectsPage () {
 
     if(projects) return <div className="bg-gray-50 flex flex-col h-full gap-4 p-4">
         <div className="font-thin px-6 pt-4 text-6xl text-center">
-            Ваші проекти
+            Ваші проєкти
         </div>
         <div className="flex justify-end gap-2">
             <input type="text" placeholder="🔍  пошук" className={inputStyle + " py-1 w-80"} value={filter} onChange={(e: any) => setFilter(e.target.value)}/>

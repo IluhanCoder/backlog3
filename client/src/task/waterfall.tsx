@@ -38,7 +38,7 @@ const Waterfall = ({project, rights}: LocalParams) => {
         getPhases();
     }, [isMyPhases]);
 
-    if(phases) return <div>
+    if(phases) return <div className="h-fit">
         <div className="flex gap-2 justify-center">
             <input type="checkbox" checked={isMyPhases} onChange={(event) => setIsMyPhases(!isMyPhases)}/>
             <label>Тільки етапи, за які відповідальні ви</label>

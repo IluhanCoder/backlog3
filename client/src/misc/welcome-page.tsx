@@ -48,7 +48,7 @@ function WelcomePage() {
                                 </div>
                                 {userStore.user && 
                                 <div className="flex justify-center">
-                                    <Link to="/projects" className={lightButtonStyle}>ваші проекти</Link>
+                                    <Link to="/projects" className={lightButtonStyle}>ваші проєкти</Link>
                                 </div>}
                                 <div className="flex justify-center">
                                     <Link to="/registration" className={"flex gap-3 px-14 py-3 text-2xl " + welcomeButtonStyle}>розпочати роботу <p>→</p></Link>
