@@ -47,7 +47,7 @@ function KanBan({ project, rights, callBack }: LocalParams) {
         formStore.setForm(<NewTaskForm projectId={project?._id} callBack={callBack}/>)
     }
 
-    if(project.tasks) return <div className="flex flex-col gap-3 p-4">
+    if(project.tasks) return <div className="flex flex-col gap-3 bg-white p-4">
         <div className="flex gap-2 justify-center pr-4">
             <input type="checkbox" checked={isFiltered} onChange={() => setIsFiltered(!isFiltered)}/>
             <label>тільки задачі, назначені вам</label>

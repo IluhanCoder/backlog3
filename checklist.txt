@@ -1,0 +1,4 @@
+deploying:
+    - no node_modules in github
+    - NODE_VERSION variable
+    - no ts compiling in hosting, build project before host

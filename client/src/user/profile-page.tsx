@@ -46,48 +46,50 @@ function ProfilePage ({userId}: LocalParams) {
         if(userId === userStore.user?._id) setIsCurrentProfile(true);
     }, [])
 
-    return <div className="flex w-full p-16">
-        <div className={`flex ${(isCurrentProfile) ? "w-1/4" : "w-full"} gap-4`}>
-            <div className="flex flex-col justify-center w-full gap-4">
-                <div className="flex flex-col gap-2">
-                    <div className="flex justify-center">
-                        <Avatar name={userData?.nickname} src={userData?.avatar ? convertImage(userData?.avatar) : ""} className="rounded"/>
-                    </div>
-                    {isCurrentProfile && <div className="flex justify-center">
-                        <label htmlFor="files" className={smallLightButtonStyle + " hover:bg-blue-200"}>Змінити аватар</label>
-                        <input type="file" id="files" className="hidden" onChange={(e) => handleNewAvatar(e.target.files)}/>
-                    </div>}
-                </div>
-                <div className="flex justify-center text-3xl">
-                    {userData?.nickname}
-                </div>
-                <div className="flex justify-center">
-                <div className="flex flex-col gap-4  bg-gray-100 rounded p-6 px-8">
-                    <div className="flex flex-col text-xl">
-                        <div className="flex gap-2">
-                            <label className="text-gray-500">ім'я:</label>
-                            <div>{userData?.name}</div>
+    return <div className="flex flex-col p-16">
+        <div className="flex ">
+            <div className={`flex ${(isCurrentProfile) ? "w-1/4" : "w-full"} gap-4`}>
+                <div className="flex flex-col justify-center w-full gap-4">
+                    <div className="flex flex-col gap-2">
+                        <div className="flex justify-center">
+                            <Avatar name={userData?.nickname} src={userData?.avatar ? convertImage(userData?.avatar) : ""} className="rounded"/>
                         </div>
-                        <div className="flex gap-2">
-                            <label className="text-gray-500">прізвище:</label>
-                                <div>{userData?.surname}</div>
+                        {isCurrentProfile && <div className="flex justify-center">
+                            <label htmlFor="files" className={smallLightButtonStyle + " hover:bg-blue-200"}>Змінити аватар</label>
+                            <input type="file" id="files" className="hidden" onChange={(e) => handleNewAvatar(e.target.files)}/>
+                        </div>}
+                    </div>
+                    <div className="flex justify-center text-3xl">
+                        {userData?.nickname}
+                    </div>
+                    <div className="flex justify-center">
+                    <div className="flex flex-col gap-4  bg-gray-100 rounded p-6 px-8">
+                        <div className="flex flex-col text-xl">
+                            <div className="flex gap-2">
+                                <label className="text-gray-500">ім'я:</label>
+                                <div>{userData?.name}</div>
                             </div>
                             <div className="flex gap-2">
-                                <label className="text-gray-500">компанія:</label>
-                                <div>{userData?.organisation}</div>
+                                <label className="text-gray-500">прізвище:</label>
+                                    <div>{userData?.surname}</div>
+                                </div>
+                                <div className="flex gap-2">
+                                    <label className="text-gray-500">компанія:</label>
+                                    <div>{userData?.organisation}</div>
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex flex-col">
-                            {isCurrentProfile && <button type="button" className={lightButtonStyle} onClick={handleEditProfile}>редагувати профіль</button>}
+                            <div className="flex flex-col">
+                                {isCurrentProfile && <button type="button" className={lightButtonStyle} onClick={handleEditProfile}>редагувати профіль</button>}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            {isCurrentProfile && <div className="flex justify-center w-3/4">
+                <InvitesToUserMapper/>
+            </div>}
         </div>
-        {isCurrentProfile && <div className="flex justify-center w-3/4">
-            <InvitesToUserMapper/>
-        </div>}
-        <div>
+        <div className="flex flex-col gap-2">
             <UserStats userId={userId}/>
         </div>
     </div>

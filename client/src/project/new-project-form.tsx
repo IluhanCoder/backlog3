@@ -92,46 +92,56 @@ function NewProjectForm({callBack}: LocalParams) {
         }
     }
 
-    return <FormComponent formLabel="Новий проект">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2 px-10">
-            <div className="flex flex-col gap-1">
-                <label className="font-bold text-gray-600 text-xs">назва проєкту:</label>
-                <input className={inputStyle} name="name" type="text" onChange={handleChange}/>
-            </div>
-            <div>
-                <label>Початок і кінець проєкту</label>
-                <DatePicker startDate={formData.startDate} endDate={formData.endDate} handleStart={handleStart} handleEnd={handleEnd}/>
-            </div>
-            <div>
-                <label>Тип проєкту:</label>
-                <select name="type" onChange={handleChange}>
-                    <option value="auto">визначити автоматично</option>
-                    { typeOptions.map((option: string) => <option value={option}>{option}</option>)}
-                </select>
-            </div>
-            {formData.type === "auto" && <div>
-                <div>параметри</div>
-                <div>
-                    <div>
-                        <label>Інтеграція замовника</label>
-                        <input name="integration" type="checkbox" checked={formData.parameters.integration} onChange={handleParametersChange}/>
+    return <FormComponent formLabel="Новий проєкт">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2 px-4">
+            <div className="flex gap-10">
+                <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-1">
+                        <input className={inputStyle} placeholder="назва" name="name" type="text" onChange={handleChange}/>
                     </div>
-                    <div>
-                        <label>Підтримка змін вимог</label>
-                        <input name="support" type="checkbox" checked={formData.parameters.support} onChange={handleParametersChange}/>
+                    <div className="flex flex-col gap-2">
+                        <label>Терміни</label>
+                        <DatePicker className="flex flex-col gap-2" startDate={formData.startDate} endDate={formData.endDate} handleStart={handleStart} handleEnd={handleEnd}/>
                     </div>
-                    <div>
-                        <label>Фіксованість задач</label>
-                        <input name="fixation" type="checkbox" checked={formData.parameters.fixation} onChange={handleParametersChange}/>
+                    <div className="flex gap-2">
+                        <label>Тип проєкту:</label>
+                        <select className={inputStyle} name="type" onChange={handleChange}>
+                            <option value="auto">визначити автоматично</option>
+                            { typeOptions.map((option: string) => <option value={option}>{option}</option>)}
+                        </select>
+                    </div>
+                    <div className="w-full border rounded border-stone-300"></div>
+                    {formData.type === "auto" && <div className="flex justify-center">
+                        <div className="flex flex-col gap-2">
+                            <div className="flex justify-center text-xl">параметри</div>
+                            <div className="flex flex-col gap-2">
+                                <div className="flex gap-2">
+                                    <input name="integration" type="checkbox" checked={formData.parameters.integration} onChange={handleParametersChange}/>
+                                    <label>Інтеграція замовника</label>
+                                </div>
+                                <div className="flex gap-2">
+                                    <input name="support" type="checkbox" checked={formData.parameters.support} onChange={handleParametersChange}/>
+                                    <label>Підтримка змін вимог</label>    
+                                </div>
+                                <div className="flex gap-2">
+                                    <input name="fixation" type="checkbox" checked={formData.parameters.fixation} onChange={handleParametersChange}/>
+                                    <label>Фіксованість задач</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>}
+                </div>
+                <div className="flex flex-col gap-4 py-1">
+                    <div className="flex justify-center text-xl ">
+                        вимоги
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <RequirementsPusher requirementsState={requirementsState}/>
+                    </div>
+                    <div className="flex justify-center">
+                        <ErrorContainer/>
                     </div>
                 </div>
-            </div>}
-            <div className="flex flex-col gap-1">
-                <label className="font-bold text-gray-600 text-xs">вимоги:</label>
-                <RequirementsPusher requirementsState={requirementsState}/>
-            </div>
-            <div className="flex justify-center">
-                <ErrorContainer/>
             </div>
             <div className="flex justify-center">
                 <button type="submit" className={submitButtonStyle}>створити</button>
