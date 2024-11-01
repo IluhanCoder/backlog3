@@ -1,0 +1,1 @@
+{"version":3,"file":"journal-model.js","sourceRoot":"","sources":["../../src/auth/journal-model.ts"],"names":[],"mappings":";;;;;AAAA,wDAAgC;AAEhC,MAAM,aAAa,GAAG,IAAI,kBAAQ,CAAC,MAAM,CAAC;IACtC,MAAM,EAAE,kBAAQ,CAAC,KAAK,CAAC,QAAQ;IAC/B,IAAI,EAAE,IAAI;IACV,MAAM,EAAE,MAAM;CACjB,CAAC,CAAA;AAEF,kBAAe,kBAAQ,CAAC,KAAK,CAAC,SAAS,EAAE,aAAa,CAAC,CAAC"}
