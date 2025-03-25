@@ -62,6 +62,7 @@ export interface Parameters {
 }
 
 interface Project {
+    _id?: mongoose.Types.ObjectId,
     name: string,
     created: Date,
     lastModified: Date,

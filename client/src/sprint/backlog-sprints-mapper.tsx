@@ -7,32 +7,45 @@ import formStore from "../forms/form-store";
 import EditSprintForm from "./edit-sprint-form";
 import { lightButtonStyle, redButtonSyle, submitButtonStyle } from "../styles/button-syles";
 import { Rights } from "../project/project-types";
+import LoadingScreen from "../misc/loading-screen";
 
 interface LocalParams {
-    sprints: SprintResponse[],
-    pullHandler: (taskId: string, sprintId: string) => {},
-    assignHandler: (task: TaskResponse) => void,
-    deleteHandler: (taskId: string) => void,
-    detailsHandler: (taskId: string) => void,
-    callBack?: () => {},
+    backlogId: string,
+    projectId: string,
     rights: Rights
 }
 
-function BacklogSprintsMapper({sprints, pullHandler, assignHandler, callBack, deleteHandler, detailsHandler, rights}: LocalParams) {
+function BacklogSprintsMapper({rights, backlogId, projectId}: LocalParams) {
+    const [sprints, setSprints] = useState<SprintResponse[]>();
+
+    const getData = async () => {
+            const response = await sprintService.getSprints(backlogId);
+            setSprints([...response.sprints]);
+        }
+
     const handleEdit = (sprintId: string) => {
-        formStore.setForm(<EditSprintForm sprintId={sprintId} callBack={callBack}/>);
+        formStore.setForm(<EditSprintForm sprintId={sprintId} callBack={getData}/>);
+    }
+
+    useEffect(() => {
+        getData();
+    }, []);
+
+    const handlePull = async (taskId: string) => {
+        await sprintService.pullTask(taskId, backlogId);
+        getData();
     }
 
     const handleDelete = async (sprintId: string) => {
         await sprintService.deleteSprint(sprintId);
-        if(callBack) callBack();
+        getData();
     }
 
     const isTerminated = (sprint: SprintResponse) => {
         return new Date() > new Date(sprint.endDate);
     }
 
-    return <div className="flex flex-col gap-2">
+    if(sprints) return <div className="flex flex-col gap-2">
         {sprints.length > 0 && sprints.map((sprint: SprintResponse) => <div className={`flex rounded border px-6 py-3 flex-col ${(isTerminated(sprint)) ? "border-red-500 border-2" : "border"}`}>
             <div className="flex justify-between">
                 <div className="text-xl">{sprint.name}</div>
@@ -43,10 +56,11 @@ function BacklogSprintsMapper({sprints, pullHandler, assignHandler, callBack, de
             </div>
             <div>
                 <div>задачі спринту:</div>
-                <SprintTasksMapper rights={rights} detailsHandler={detailsHandler} assignHandler={assignHandler} deleteHandler={deleteHandler} pullHandler={(taskId: string) => pullHandler(taskId, sprint._id)} sprint={sprint}/>
+                <SprintTasksMapper rights={rights} backlogId={backlogId} projectId={projectId} sprintId={sprint._id}/>
             </div>
         </div>) || <div className="flex justify-center p-8 text-xl font-bold text-gray-600">спринти відсутні</div> }
     </div>
+    else return <LoadingScreen/>
 }
 
 export default BacklogSprintsMapper;

@@ -102,29 +102,29 @@ function ProjectPage () {
         getUserRights();
     }, [project]);
 
-    return <div className="flex w-full bg-stone-100 h-fit">
-        {project && <div className="flex w-full ">
+    return <div className="flex w-full bg-stone-100 h-full">
+        {project && <div className="flex flex-row-reverse w-full ">
             <div className="p-2">
                 <div className="p-2 flex flex-col gap-2 bg-white rounded shadow">
                     <div className="flex flex-col gap-2">
                         <div className="flex w-full">
                             <Link to={`/analytics/${project._id}`} className="flex gap-2 py-1 px-2 text-stone-700 font-thin rounded w-full justify-center">
-                                <div>📈 аналітика</div>
+                                <div>📊 аналітика</div>
                             </Link>
                         </div>
                         {rights?.editParticipants && <div className="flex w-full">
                             <Link to={`/rights/${project._id}`} className="flex gap-2 py-1 px-2 text-stone-700 font-thin rounded w-full justify-center">
-                                <div>👥 права учасників</div>
+                                <div>📝 права учасників</div>
                             </Link>
                         </div>}
                         <div className="flex w-full">
                             <button onClick={() => {formStore.setForm(<RequiremenetsWindow projectId={projectId!}/>)}} className="flex gap-2 py-1 px-2 text-stone-700 font-thin rounded w-full justify-center">
-                                <div>📋 вимоги</div>
+                                <div>✅ вимоги</div>
                             </button>
                         </div>
                         {rights?.editProjectData && <div className="flex w-full">
                             <Link to={`/settings/${project._id}`} className="flex gap-2 py-1 px-2 text-stone-700 font-thin rounded w-full justify-center">
-                                <div>⚙️ налаштування</div>
+                                <div>🎛️ налаштування</div>
                             </Link>
                         </div>}
                     </div>

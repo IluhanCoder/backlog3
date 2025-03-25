@@ -461,8 +461,17 @@ export default new class ProjectService {
 
     async getUserRights (userId: string, projectId: string) {
       try {
-        const project = await ProjectModel.findById(projectId);
+        const project: Project = await ProjectModel.findById(projectId);
         const userParticipating = project.participants.find((participant: any) => (new mongoose.Types.ObjectId(userId)).equals(participant.participant));
+        if(project.owner.toString() === userId.toString()) return {
+          create: true,
+          edit: true,
+          delete: true,
+          check: true,
+          editParticipants: true,
+          addParticipants: true,
+          editProjectData: true
+        } as Rights
         if (userParticipating) return userParticipating.rights;
         else return null;
       } catch (error) {

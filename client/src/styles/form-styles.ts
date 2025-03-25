@@ -4,7 +4,7 @@ export const formSubContainerStyle = "flex content-center justify-center"
 
 export const inputStyle = "border border-stone-500 rounded px-3 py-2 text-sm focus:border-blue-100"
 
-export const linkStyle = "font-thin text-blue-400 visited:text-blue-800"
+export const linkStyle = "font-thin text-green-700 visited:text-gray-800"
 
 export const selectStyle = "bg-gray-100 text-xs font-semibold rounded px-4 py-1"
 

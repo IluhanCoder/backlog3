@@ -8,6 +8,11 @@ export default new class BacklogService {
         return result;
     }
 
+    async getBacklogById(backlogId: string) {
+      const result = await backlogModel.findById(backlogId);
+      return result;
+    }
+
     async createBacklog (projectId: string, name: string) {
         await backlogModel.create({projectId: new mongoose.Types.ObjectId(projectId), name});
     }

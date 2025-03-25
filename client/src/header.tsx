@@ -4,7 +4,7 @@ import LoginForm from "./auth/login-form";
 import { observer } from "mobx-react";
 import userStore from "./user/user-store";
 import authService from "./auth/auth-service";
-import { SiVscodium } from "react-icons/si";
+import { GiCycle } from "react-icons/gi";
 import { lightButtonStyle, smallLightButtonStyle } from "./styles/button-syles";
 import Avatar from "react-avatar";
 import { Buffer } from "buffer";
@@ -28,25 +28,25 @@ function Header() {
         return base64String;
     };
 
-    if(pathname !== "/registration" && pathname !== "/") return <div className="flex shadow justify-between gap-2 px-8 py-2">
-        <div className="flex gap-14">
-            <div className="text-2xl font-semibold flex gap-1">
-                <SiVscodium className="mt-1"/>
-                Methologist
+    if(pathname !== "/registration" && pathname !== "/") return <div className="flex flex-col shadow justify-between gap-2 p-5 border-r bg-stone-50">
+        <div className="flex flex-col gap-4">
+            <div className="text-3xl text-green-500 font-semibold flex justify-center gap-1">
+                <GiCycle className="mt-1"/>
+                Agile
             </div>
-            {userStore.user && <div className="mt-1 flex text-gray-600 gap-3">
+            {userStore.user && <div className="mt-1 text-xl flex flex-col text-gray-700 gap-3">
                 <Link to="/projects">Проєкти</Link>
                 <Link to="/profile">Профіль</Link>
             </div>}
         </div>
         <div className="text-gray-600">
             {userStore.user && 
-            <div className="flex gap-4">
+            <div className="flex flex-col gap-1">
                 <Link to="/profile" className="flex gap-2">
                     <Avatar src={userStore.user.avatar ? convertImage(userStore.user.avatar.data) : ""} name={userStore.user.nickname} round size="30"/>
                     <div className="mt-1">{userStore.user.nickname}</div>
                 </Link>
-                <div className="pt-1">
+                <div className="flex justify-center pt-1">
                     <button className={smallLightButtonStyle} type="button" onClick={handleLogout}>вийти</button>
                 </div>
             </div>

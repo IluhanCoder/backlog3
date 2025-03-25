@@ -16,8 +16,8 @@ function ProjectCard({project}: LocalParams) {
         navigate(`/project/${projectId}`);
     }
 
-    return <button type="button" className="flex flex-col bg-white rounded shadow-sm border-1 pb-6 pt-4 px-8 hover:scale-105 transition-transform duration-300 ease-in-out" onClick={() => handleClick(project._id)}>
-            <div className="flex flex-col gap-1 justify-center w-full py-2 pb-4">
+    return <button type="button" className="flex justify-between bg-white rounded shadow-sm border-1 py-4 px-8 hover:scale-105 transition-transform duration-300 ease-in-out" onClick={() => handleClick(project._id)}>
+            <div className="flex flex-col gap-1 justify-center">
                 <div className="font-thin text-3xl">{`${project.type === "scrum" ? '🔄' : (project.type === "waterfall") ? '🌊' : '📋'} ${project.name}`}</div>
                 <div className="flex text-xs font-thin text-stone-600 justify-center gap-1">
                     <label>методологія:</label>

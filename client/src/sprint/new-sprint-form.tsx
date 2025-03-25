@@ -17,8 +17,8 @@ function NewSprintForm ({backlogId, projectId, callBack}: LocalParams) {
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
         await sprintService.createSprint(formData.name, backlogId, projectId);
+        if(callBack !== undefined) callBack();
         formStore.dropForm();
-        if(callBack) callBack();
     }
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {

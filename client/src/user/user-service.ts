@@ -1,4 +1,6 @@
 import $api from "../axios-setup";
+import { Rights } from "../project/project-types";
+import userStore from "./user-store";
 import User from "./user-types";
 
 export default new class UserService {
@@ -8,6 +10,10 @@ export default new class UserService {
 
     async getUserById(userId: string) {
         return (await $api.get(`/user/${userId}`)).data;
+    }
+
+    async getCurrentUserRights(projectId: string): Promise<{status: string, rights: Rights}> {
+        return (await $api.get(`/user-rights/${projectId}`)).data;
     }
 
     async updateUser(userId: string, newData: User) {

@@ -38,20 +38,20 @@ function ProjectsPage () {
     useEffect(() => {fetchProjects()}, [user]);
     useEffect(() => {filterProject()}, [filter]);
 
-    if(projects) return <div className="bg-gray-50 flex flex-col h-full gap-4 p-4">
-        <div className="font-thin px-6 pt-4 text-6xl text-center">
+    if(projects) return <div className="bg-gray-50 flex flex-col h-full p-4">
+        <div className="font-thin px-6 pt-4 text-3xl text-center">
             Ваші проєкти
         </div>
         <div className="flex justify-end gap-2">
             <input type="text" placeholder="🔍  пошук" className={inputStyle + " py-1 w-80"} value={filter} onChange={(e: any) => setFilter(e.target.value)}/>
         </div>
-        {projects.length > 0 && <div className="grow overflow-auto">
-            <div className="grid grid-cols-3 gap-4">
+        {projects.length > 0 && <div className="grow overflow-auto pt-6">
+            <div className="flex px-6 flex-col gap-4">
             {filteredProjects.map((project: ProjectResponse) => {
                 return <ProjectCard project={project}/>
             })}</div></div> || <div className="grow text-center pt-48 text-2xl font-bold text-gray-600">проєкти відсутні</div>}
         <div className="flex justify-center">
-            <button type="button" className={submitButtonStyle} onClick={handleNewProject}>створити новий проект</button>
+            <button type="button" className={submitButtonStyle} onClick={handleNewProject}>створити новий проєкт</button>
         </div>
     </div>
     else return <LoadingScreen/>

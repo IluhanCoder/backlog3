@@ -8,9 +8,10 @@ import { BacklogResponse } from "../backlogs/backlog-types";
 import PushTaskForm from "../sprint/push-task-form";
 import { SprintResponse } from "../sprint/sprint-types";
 import sprintService from "../sprint/sprint-service";
+import LoadingScreen from "../misc/loading-screen";
 
 interface LocalParams {
-    tasks: TaskResponse[],
+    backlogId: string,
     push: boolean,
     sprintId?: string,
     onCheck?: () => {},
@@ -18,7 +19,9 @@ interface LocalParams {
     onPull?: () => {}
 }
 
-function TasksMapper ({tasks, onCheck, push, onPush, sprintId, onPull}: LocalParams) {
+function TasksMapper ({backlogId, onCheck, push, onPush, sprintId, onPull}: LocalParams) {
+    const [tasks, setTasks] = useState<TaskResponse[]>();
+
     const handleCheck = async (event: ChangeEvent<HTMLInputElement>) => {
         const {id, checked} = event.target;
         if(checked) await taskService.checkTask(id);
@@ -26,26 +29,22 @@ function TasksMapper ({tasks, onCheck, push, onPush, sprintId, onPull}: LocalPar
         if(onCheck) onCheck();
     }
 
-    const [sprints, setSprints] = useState<SprintResponse[]>([]);
+    const getSprints = async () => {
+        const result = await taskService.getBacklogTasks(backlogId);
+        setTasks([...result.sprints])
+    }
 
-    // const getSprints = async () => {
-    //     if(currentBackLog) {
-    //         const result = await sprintService.getSprints(currentBackLog?._id);
-    //         setSprints([...result.sprints])
-    //     }
-    // }
-
-    // useEffect(() => { getSprints() }, []);
+    useEffect(() => { getSprints() }, []);
 
     const handleSprintPush = (task: TaskResponse) => {
-        formStore.setForm(<PushTaskForm sprints={sprints} task={task} callBack={onPush}/>)
+        formStore.setForm(<PushTaskForm backlogId={backlogId} task={task} callBack={onPush}/>)
     }
 
     const handleSprintPull = async (taskId: string) => {
         if(sprintId && onPull) { await sprintService.pullTask(taskId, sprintId); onPull(); }
     }
 
-    return <div>
+    if(tasks) return <div>
         {tasks.map((task: TaskResponse) => {
             return <div className="flex gap-2">
                 <div>
@@ -57,6 +56,7 @@ function TasksMapper ({tasks, onCheck, push, onPush, sprintId, onPull}: LocalPar
             </div>
         })}
     </div>
+    else return <LoadingScreen/>
 }
 
 export default TasksMapper;

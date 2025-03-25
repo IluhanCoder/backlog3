@@ -19,6 +19,57 @@ export default new class AnalyticsController {
         }
     }
 
+    async averageTasksPerPerProject(req: Request, res: Response) {
+        try {
+            const {userId, startDate, endDate, isDaily} = req.body;
+            const result = await analyticsService.averageTasksPerProjectAmount(userId, startDate, endDate, isDaily);
+            res.status(200).json({
+                status: "success",
+                result
+            });
+        } catch (error) {
+            res.json({
+                status: "fail",
+                message: "internal server error"
+            }).status(500);
+            throw error;
+        }
+    }
+
+    async createdProjectAmount(req: Request, res: Response) {
+        try {
+            const {userId, startDate, endDate, isDaily} = req.body;
+            const result = await analyticsService.createdProjectAmount(userId, startDate, endDate, isDaily);
+            res.status(200).json({
+                status: "success",
+                result
+            });
+        } catch (error) {
+            res.json({
+                status: "fail",
+                message: "internal server error"
+            }).status(500);
+            throw error;
+        }
+    }
+
+    async doneProjectAmount(req: Request, res: Response) {
+        try {
+            const {userId, startDate, endDate, isDaily} = req.body;
+            const result = await analyticsService.fullyCompletedProjectsAmount(userId, startDate, endDate, isDaily);
+            res.status(200).json({
+                status: "success",
+                result
+            });
+        } catch (error) {
+            res.json({
+                status: "fail",
+                message: "internal server error"
+            }).status(500);
+            throw error;
+        }
+    }
+
     async taskRatio(req: Request, res: Response) {
         try {
             const {projectId, startDate, endDate, daily, userId, phaseId} = req.body;

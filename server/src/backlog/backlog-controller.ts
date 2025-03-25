@@ -19,6 +19,23 @@ export default new class BacklogController {
         }        
     }
 
+    async getBacklogById(req: Request, res: Response) {
+        try {
+            const {backlogId} = req.params;
+            const backlog = await backlogService.getBacklogById(backlogId);
+            res.status(200).json({
+                status: "success",
+                backlog
+            })
+        } catch (error) {
+            res.json({
+                status: "fail",
+                message: "internal server error"
+            }).status(500)
+            throw error;
+        }
+    }
+
     async createBacklog(req: Request, res: Response) {
         try {
             const {projectId} = req.params;

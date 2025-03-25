@@ -23,11 +23,11 @@ function App() {
   }, [])
 
   return (
-    <div className='h-full flex flex-col'>
+    <div className='h-full w-full flex'>
       <BrowserRouter>
         <FormCloserProvider>
           <Header/>
-          <div className='grow overflow-auto'>
+          <div className='grow overflow-auto h-full'>
             <Routes>
               {CustomRoutes.map(route => route)}
             </Routes>
