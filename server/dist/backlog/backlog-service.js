@@ -22,6 +22,12 @@ exports.default = new class BacklogService {
             return result;
         });
     }
+    getBacklogById(backlogId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield backlog_model_1.default.findById(backlogId);
+            return result;
+        });
+    }
     createBacklog(projectId, name) {
         return __awaiter(this, void 0, void 0, function* () {
             yield backlog_model_1.default.create({ projectId: new mongoose_1.default.Types.ObjectId(projectId), name });

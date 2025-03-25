@@ -12,7 +12,7 @@ const requirementSchema = new mongoose_1.default.Schema({
     },
     description: {
         type: String,
-        required: true,
+        required: false,
         unique: false,
     },
     category: {

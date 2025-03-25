@@ -472,6 +472,16 @@ exports.default = new class ProjectService {
             try {
                 const project = yield project_model_1.default.findById(projectId);
                 const userParticipating = project.participants.find((participant) => (new mongoose_1.default.Types.ObjectId(userId)).equals(participant.participant));
+                if (project.owner.toString() === userId.toString())
+                    return {
+                        create: true,
+                        edit: true,
+                        delete: true,
+                        check: true,
+                        editParticipants: true,
+                        addParticipants: true,
+                        editProjectData: true
+                    };
                 if (userParticipating)
                     return userParticipating.rights;
                 else

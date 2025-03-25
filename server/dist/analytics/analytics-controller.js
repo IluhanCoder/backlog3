@@ -33,6 +33,63 @@ exports.default = new class AnalyticsController {
             }
         });
     }
+    averageTasksPerPerProject(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { userId, startDate, endDate, isDaily } = req.body;
+                const result = yield analytics_service_1.default.averageTasksPerProjectAmount(userId, startDate, endDate, isDaily);
+                res.status(200).json({
+                    status: "success",
+                    result
+                });
+            }
+            catch (error) {
+                res.json({
+                    status: "fail",
+                    message: "internal server error"
+                }).status(500);
+                throw error;
+            }
+        });
+    }
+    createdProjectAmount(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { userId, startDate, endDate, isDaily } = req.body;
+                const result = yield analytics_service_1.default.createdProjectAmount(userId, startDate, endDate, isDaily);
+                res.status(200).json({
+                    status: "success",
+                    result
+                });
+            }
+            catch (error) {
+                res.json({
+                    status: "fail",
+                    message: "internal server error"
+                }).status(500);
+                throw error;
+            }
+        });
+    }
+    doneProjectAmount(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { userId, startDate, endDate, isDaily } = req.body;
+                const result = yield analytics_service_1.default.fullyCompletedProjectsAmount(userId, startDate, endDate, isDaily);
+                res.status(200).json({
+                    status: "success",
+                    result
+                });
+            }
+            catch (error) {
+                res.json({
+                    status: "fail",
+                    message: "internal server error"
+                }).status(500);
+                throw error;
+            }
+        });
+    }
     taskRatio(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

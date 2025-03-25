@@ -33,6 +33,25 @@ exports.default = new class BacklogController {
             }
         });
     }
+    getBacklogById(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { backlogId } = req.params;
+                const backlog = yield backlog_service_1.default.getBacklogById(backlogId);
+                res.status(200).json({
+                    status: "success",
+                    backlog
+                });
+            }
+            catch (error) {
+                res.json({
+                    status: "fail",
+                    message: "internal server error"
+                }).status(500);
+                throw error;
+            }
+        });
+    }
     createBacklog(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

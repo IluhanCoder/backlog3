@@ -36,6 +36,7 @@ router.post("/avatar", upload.single("file"), user_controller_1.default.setAvata
 router.patch("/task-check/:taskId", task_controller_1.default.checkTask);
 router.patch("/task-uncheck/:taskId", task_controller_1.default.unCheckTask);
 router.get("/backlogs/:projectId", backlog_controller_1.default.getProjectBacklogs);
+router.get("/backlog/:backlogId", backlog_controller_1.default.getBacklogById);
 router.post("/backlog/:projectId", backlog_controller_1.default.createBacklog);
 router.post("/sprint", sprint_controller_1.default.createSprint);
 router.get("/sprints/:backlogId", sprint_controller_1.default.getBacklogSprints);
@@ -80,5 +81,8 @@ router.put("/project/:projectId", project_controller_1.default.editProject);
 router.get("/done-stats/:userId", auth_controller_1.default.getDoneStatistics);
 router.get("/login-stats/:userId", auth_controller_1.default.getLoginStatistics);
 router.get("/requirements/:projectId", requirement_controller_1.default.getRequirements);
+router.post("/created-project-amount", analytics_controller_1.default.createdProjectAmount);
+router.post("/done-project-amount", analytics_controller_1.default.doneProjectAmount);
+router.post("/average-tasks", analytics_controller_1.default.averageTasksPerPerProject);
 exports.default = router;
 //# sourceMappingURL=router.js.map
