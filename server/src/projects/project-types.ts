@@ -37,6 +37,14 @@ export interface ProjectCredentials {
     requirements: RequirementTemp[]
 }
 
+export interface EditProjectCredentials {
+    name: string,
+    daysPerWeek: number,
+    hoursPerDay: number,
+    startDate: Date,
+    endDate: Date,
+}
+
 export interface ProjectResponse {
     name: string,
     created: Date,

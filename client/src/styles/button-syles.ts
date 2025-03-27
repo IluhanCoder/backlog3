@@ -1,6 +1,6 @@
 export const submitButtonStyle = "font-thin text-white bg-green-500 px-5 py-2 hover:bg-green-700"
 
-export const largeSubmitButtonStyle = "font-thin text-lg text-white bg-green-500 px-5 py-2 hover:bg-blue-700"
+export const largeSubmitButtonStyle = "font-thin text-lg text-white bg-green-500 px-5 py-2 hover:bg-green-700"
 
 export const redButtonSyle = "text-xs font-semibold text-red-600 bg-red-100 px-3 py-2 border border-red-600"
 

@@ -45,7 +45,7 @@ function AssignForm({task, projectId, callBack}: LocalParams) {
             </div>
             <div className="flex flex-col gap-1">
                 <div className="flex">Обрані користувачі:</div>
-                <div>{selected.length > 0 && selected.map((user: UserResponse) => <div>{user.nickname}</div> || <div className="text-xs text-gray-600">жодного користувача не обрано</div>)}</div>
+                <div>{selected.length > 0 && (selected.map((user: UserResponse) => <div>{user.nickname}</div>) || <div className="text-xs text-gray-600">жодного користувача не обрано</div>)}</div>
             </div>
             <button type="button" className={submitButtonStyle} onClick={handleSubmit}>назначити</button>
         </div> || <div className="w-96"><LoadingScreen/></div>}

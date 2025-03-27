@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import ProjectModel from "./project-model";
-import Project, { ExtendedProjectResponse, Parameters, Participant, ParticipantResponse, ProjectCredentials, Rights } from "./project-types";
+import Project, { EditProjectCredentials, ExtendedProjectResponse, Parameters, Participant, ParticipantResponse, ProjectCredentials, Rights } from "./project-types";
 import inviteService from "../invites/invite-service";
 import backlogModel from "../backlog/backlog-model";
 import requirementService from "../requirements/requirement-service";
@@ -662,7 +662,7 @@ export default new class ProjectService {
       return totalSum;
     }
 
-    async editProject(projectId: string, newProject: ProjectCredentials) {
+    async editProject(projectId: string, newProject: EditProjectCredentials) {
       await ProjectModel.findByIdAndUpdate(projectId, newProject);
     }
 }

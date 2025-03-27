@@ -1,5 +1,5 @@
 import $api from "../axios-setup"
-import { Participant, ParticipantResponse, ProjectCredentials, ProjectResponse, Rights } from "./project-types";
+import { EditProjectCredentials, Participant, ParticipantResponse, ProjectCredentials, ProjectResponse, Rights } from "./project-types";
 
 export default new class ProjectService {
     async getUserProjects() {
@@ -67,7 +67,8 @@ export default new class ProjectService {
         return result;
     }
 
-    async editProject(projectId: string, newProject: ProjectCredentials) {
+    async editProject(projectId: string, input: any) {
+        const {owner, ...newProject} = input;
         await $api.put(`/project/${projectId}`, {newProject});
     }
 }

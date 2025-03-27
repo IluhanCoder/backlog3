@@ -26,9 +26,9 @@ function SprintTasksMapper ({sprintId, projectId, backlogId, rights}: LocalParam
         const result = await taskService.getSprintTasks(sprintId);
         setTasks([...result.tasks]);
     }
-
+ 
     const detailsHandler = (taskId: string) => {
-        formStore.setForm(<TaskInfoForm rights={rights} projectId={sprintId} callBack={() => getTasks()} taskId={taskId}/>)
+        formStore.setForm(<TaskInfoForm rights={rights} projectId={projectId} callBack={() => getTasks()} taskId={taskId}/>)
     }
 
     const handleDelete = async (taskId: string) => {

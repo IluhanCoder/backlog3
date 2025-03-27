@@ -6,6 +6,7 @@ import { observer } from "mobx-react";
 import { SiVscodium } from "react-icons/si";
 import formStore from "../forms/form-store";
 import LoginForm from "../auth/login-form";
+import { GiCycle } from "react-icons/gi";
 
 function WelcomePage() {
     return <div className="flex w-full p-4">
@@ -13,9 +14,11 @@ function WelcomePage() {
             <div className="flex justify-center w-2/3">
                 <div className="flex flex-col gap-28 w-full">
                     <div className="flex justify-between">
-                        <div className="text-2xl font-semibold flex gap-1">
-                            <SiVscodium className="mt-1"/>
-                            Methologist
+                        <div className="flex gap-2 text-green-500 text-3xl">
+                            <GiCycle className="mt-1"/>
+                            <div className="font-semibold flex gap-1">
+                                Agile
+                            </div>
                         </div>
                         <div>
                             <button type="button" className={welcomeButtonStyle + " flex gap-3"} onClick={() => formStore.setForm(<LoginForm/>)}>Увійти в обліковий запис <p>→</p></button>
@@ -23,27 +26,27 @@ function WelcomePage() {
                     </div>
                     <div className="flex justify-center">
                         <div className="flex flex-col gap-10">
-                            <h1 className="text-6xl text-gray-800 font-bold">Чому саме Methologist?</h1>
+                            <h1 className="text-6xl text-gray-800 font-bold">Проваджуйте Agile!</h1>
                                 <div className="flex flex-col gap-4 text-xl px-10 font-light">
                                     <div className="flex justify-center gap-4">
-                                        🕹️
-                                        <p>три різних методології керування проєктами</p>
-                                    </div>
-                                    <div className="flex justify-center gap-4">
-                                        👥
+                                        ☑️
                                         <p>можливість збирати та керувати командою</p>
                                     </div>
                                     <div className="flex justify-center gap-4">
-                                        ⏰
+                                        ☑️
                                         <p>гнучке керування термінами проєктів</p>
                                     </div>
                                     <div className="flex justify-center gap-4">
-                                        📋
+                                        ☑️
                                         <p>розподіл та виконання задач</p>
                                     </div>
                                     <div className="flex justify-center gap-4">
-                                        📈
+                                        ☑️
                                         <p>збір статистики та аналіз ефективності</p>
+                                    </div>
+                                    <div className="flex justify-center gap-4">
+                                        ☑️
+                                        <p>три різних методології керування проєктами</p>
                                     </div>
                                 </div>
                                 {userStore.user && 

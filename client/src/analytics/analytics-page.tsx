@@ -23,8 +23,8 @@ function AnalyticsPage () {
     const [isCurrentUser, setIsCurrentUser] = useState<boolean>(false);
     const [isDaily, setIsDaily] = useState<boolean>(false);
 
-    const [startDate, setStartDate] = useState<Date>(new Date(2024, 0, 1));
-    const [endDate, setEndDate] = useState<Date>(new Date(2024, 11, 1));
+    const [startDate, setStartDate] = useState<Date>(new Date(2024, 10, 1));
+    const [endDate, setEndDate] = useState<Date>(new Date(2025, 3, 1));
 
     const handleStart = (date: Date) => {
         if (date >= endDate) return;
@@ -53,6 +53,7 @@ function AnalyticsPage () {
     const getCreatedTaskData = async () => {
         if(projectId && userStore.user?._id) {
             const result = await analyticsService.createdTaskAmount(projectId, startDate, endDate, isDaily, (isCurrentUser) ? userStore.user?._id : undefined);
+            console.log(result);
             setCreatedTaskData([...result.result]);
         }
     }

@@ -13,7 +13,7 @@ const UserProjectStats = () => {
     const [averageTasksData, setAverageTasksData] = useState<any[] | null>(null);
     const [isDaily, setIsDaily] = useState<boolean>(false);
     const [startDate, setStartDate] = useState<Date>(new Date(2024, 8, 1));
-    const [endDate, setEndDate] = useState<Date>(new Date(2025, 2, 1));
+    const [endDate, setEndDate] = useState<Date>(new Date(2025, 4, 1));
 
     const getData = async () => {
         if (userStore.user?._id) {

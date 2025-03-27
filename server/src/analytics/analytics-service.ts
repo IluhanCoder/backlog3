@@ -203,24 +203,35 @@ generateProjectStatistic(
     public async predictRatio(projectId: string, userId: string | undefined) {
       const tasks: Statistic[] = await this.taskRatio(
         projectId,
-        new Date(2024, 0, 1),
         new Date(2025, 0, 1),
+        new Date(2026, 1, 0),
         false,
         userId
       );
-  
-      const months = tasks.map(entry => entry.month);
+    
+      console.log("Task Ratios:", tasks); // Перевіряємо, які дані надходять
+    
+      const months = tasks.map(entry => entry.month); // Очікує числа 1-12
       const ratios = tasks.map(entry => entry.amount);
-  
+    
+      // Якщо всі значення нулі, не запускаємо регресію
+      if (ratios.every(r => r === 0)) {
+        console.warn("All ratios are zero. Regression may not work properly.");
+        return months.map(month => ({ year: 2025, month, amount: 0 }));
+      }
+    
       const regression = new SimpleLinearRegression(months, ratios);
-  
+    
       const predictedRatios: Statistic[] = [];
-      for (let month = 0; month <= 11; month++) {
+      for (let month = 1; month <= 12; month++) {
         const predictedRatio = regression.predict(month);
         predictedRatios.push({ year: 2025, month, amount: predictedRatio });
       }
+    
+      console.log("Predicted Ratios:", predictedRatios);
       return predictedRatios;
     }
+    
   
     // Other methods remain unchanged...
   
@@ -321,21 +332,20 @@ generateProjectStatistic(
     
       return result;
     }
-    
-    
-    
-    
-    
-    
 
     private accumulateAmounts(stats: Statistic[]): Statistic[] {
-        let cumulativeAmount = 0;
-      
-        return stats.map(entry => {
-          cumulativeAmount += entry.amount;
+      let cumulativeAmount = 0;
+  
+      return stats.map((entry, index) => {
+          if (index === 0) {
+              cumulativeAmount = entry.amount; // Початкове значення
+          } else {
+              cumulativeAmount += entry.amount; // Накопичуємо
+          }
           return { ...entry, amount: cumulativeAmount };
-        });
-      }
+      });
+  }
+  
   
     public async checkedTaskAmount(
       projectId: string,
@@ -358,7 +368,6 @@ generateProjectStatistic(
         phaseId?: string
       ): Promise<Statistic[]> {
         const tasks: Task[] = await this.getFilteredTasks(projectId, startDate, endDate, userId, phaseId);
-
         // Generate statistics for task counts by month or day
         const stats = this.generateStatistics(tasks, startDate, endDate, isDaily, task => task.created);
 
@@ -367,33 +376,39 @@ generateProjectStatistic(
       }
       
       private calculateCumulativeRatios(stats: Statistic[], tasks: Task[]): Statistic[] {
-        let cumulativeDone = 0;
-        let cumulativeTotal = 0;
-      
         return stats.map(entry => {
-          // Filter tasks created up to the current entry's month or day
+          const currentDate = new Date(entry.year, entry.month - 1, entry.day || 1);
+      
+          console.log("Processing date:", entry.year, entry.month, entry.day, "=>", currentDate.toISOString());
+      
+          // Фільтруємо задачі, створені ДО або НА поточний період
           const tasksUntilNow = tasks.filter(task => {
-              return this.isBeforeOrSame(task.created, new Date(entry.year, entry.month - 1, entry.day || 1))
-            }
-          );
-
-          console.log(new Date(entry.year, entry.month - 1, entry.day || 1));
+            const taskCreated = new Date(task.created);
+            return taskCreated.getFullYear() < currentDate.getFullYear() ||
+              (taskCreated.getFullYear() === currentDate.getFullYear() && taskCreated.getMonth() <= currentDate.getMonth());
+          });
       
-          const doneTasks = tasksUntilNow.filter(task => (task.status === "done" && this.isBeforeOrSame(task.checkedDate, new Date(entry.year, entry.month - 1, entry.day || 1)))).length;
-          cumulativeDone = doneTasks; // Update cumulative done count
-          cumulativeTotal = tasksUntilNow.length; // Update total tasks count
-
-          console.log("done: " + cumulativeDone);
-          console.log("total: " + cumulativeTotal);
+          if (tasksUntilNow.length === 0) {
+            console.log(`No tasks before ${currentDate.toISOString()}, ratio = 0`);
+            return { ...entry, amount: 0 };
+          }
       
-          // Calculate the ratio (percentage of done tasks)
-          const ratio = cumulativeTotal > 0 ? (cumulativeDone / cumulativeTotal) * 100 : 0;
-
-          console.log("ratio: " + ratio);
+          // Фільтруємо виконані задачі
+          const doneTasks = tasksUntilNow.filter(task => {
+            if (!task.checkedDate) return false;
+            const taskChecked = new Date(task.checkedDate);
+            return taskChecked <= currentDate;
+          }).length;
+      
+          const ratio = (doneTasks / tasksUntilNow.length) * 100;
+      
+          console.log(`Tasks until ${currentDate.toISOString()}: Total = ${tasksUntilNow.length}, Done = ${doneTasks}, Ratio = ${ratio}`);
       
           return { ...entry, amount: ratio };
         });
       }
+      
+      
       
       private isBeforeOrSame(date1: Date, date2: Date): boolean {
         return (
@@ -403,42 +418,56 @@ generateProjectStatistic(
       }
       
   
-    private generateStatistics(
-      tasks: Task[],
-      startDate: Date,
-      endDate: Date,
-      isDaily: boolean,
-      dateExtractor: (task: Task) => Date,
-      options?: { ratio?: boolean }
-    ): Statistic[] {
-      const statsMap: { [key: string]: { done: number; total: number } } = {};
-  
-      tasks.forEach(task => {
-        const date = dateExtractor(task);
-        const key = isDaily
-          ? `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-          : `${date.getFullYear()}-${date.getMonth() + 1}`;
-  
-        if (!statsMap[key]) {
-          statsMap[key] = { done: 0, total: 0 };
+      private generateStatistics(
+        tasks: Task[],
+        startDate: Date,
+        endDate: Date,
+        isDaily: boolean,
+        dateExtractor: (task: Task) => Date
+      ): Statistic[] {
+        const statsMap: { [key: string]: { amount: number } } = {};
+      
+        // Генеруємо список дат у заданому діапазоні
+        const currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
+          const key = isDaily
+            ? `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, "0")}-${currentDate.getDate().toString().padStart(2, "0")}`
+            : `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, "0")}`;
+      
+          statsMap[key] = { amount: 0 };
+      
+          // Оновлюємо дату
+          if (isDaily) {
+            currentDate.setDate(currentDate.getDate() + 1);
+          } else {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+          }
         }
-  
-        statsMap[key].total++;
-        if (task.status === 'done') {
-          statsMap[key].done++;
-        }
-      });
-  
-      const range = this.generateDateRange(startDate, endDate, isDaily);
-  
-      return range.map(({ year, month, day }) => {
-        const key = isDaily ? `${year}-${month}-${day}` : `${year}-${month}`;
-        const { done, total } = statsMap[key] || { done: 0, total: 0 };
-  
-        const amount = options?.ratio && total > 0 ? Math.round((done / total) * 100) : total;
-        return { year, month, day, amount };
-      });
-    }
+      
+        // Додаємо таски в правильні групи
+        tasks.forEach(task => {
+          const date = dateExtractor(task);
+          const key = isDaily
+            ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`
+            : `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}`;
+      
+          if (!statsMap[key]) return; // Пропускаємо значення поза діапазоном
+      
+          statsMap[key].amount++;
+        });
+      
+        return Object.entries(statsMap).map(([key, value]) => {
+          const [year, month, day] = key.split("-").map(Number);
+          return {
+            year,
+            month,
+            ...(isDaily && { day }), // Додаємо day лише якщо isDaily = true
+            amount: value.amount
+          };
+        });
+      }
+      
+      
   
     private generateDateRange(
       startDate: Date,

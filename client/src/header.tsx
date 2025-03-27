@@ -36,6 +36,7 @@ function Header() {
             </div>
             {userStore.user && <div className="mt-1 text-xl flex flex-col text-gray-700 gap-3">
                 <Link to="/projects">Проєкти</Link>
+                <Link to="/projects-stats">Статистика проєктів</Link>
                 <Link to="/profile">Профіль</Link>
             </div>}
         </div>

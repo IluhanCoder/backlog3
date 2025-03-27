@@ -60,7 +60,7 @@ function RegistationPage() {
                 <div className="flex flex-col w-full">
                     <div className="flex flex-col gap-2 py-6">
                         <div className="flex justify-center">
-                            <h1 className="text-3xl">Вітаємо в Methodologist 🤗</h1>
+                            <h1 className="text-3xl">Вітаємо в Agile 😉</h1>
                         </div>
                         <div className="flex justify-center text-stone-600">
                             <p>Просимо ввести інформацію про Вас, щоб Ви могли продовжити роботу із системою</p>

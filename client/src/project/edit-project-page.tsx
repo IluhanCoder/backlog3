@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Project, { ParticipantResponse, ProjectCredentials, ProjectResponse, Rights } from "./project-types";
+import Project, { EditProjectCredentials, ParticipantResponse, ProjectCredentials, ProjectResponse, Rights } from "./project-types";
 import projectService from "./project-service";
 import LoadingScreen from "../misc/loading-screen";
 import DatePicker from "../analytics/date-picker";
@@ -14,7 +14,7 @@ const EditProjectPage = () => {
     const navigate = useNavigate();
 
     const {projectId} = useParams();
-    const [formData, setFormData] = useState<ProjectCredentials>();
+    const [formData, setFormData] = useState<EditProjectCredentials>();
     const [projectData, setProjectData] = useState<ProjectResponse>();
     const [rights, setRights] = useState<Rights>();
 
@@ -36,7 +36,7 @@ const EditProjectPage = () => {
     const handleStart = (date: Date) => {
         if(formData) {
             if(date >= formData.endDate) return;
-            const newData: ProjectCredentials = {
+            const newData: EditProjectCredentials = {
                 ...formData,
                 startDate: date
             };
@@ -47,7 +47,7 @@ const EditProjectPage = () => {
     const handleEnd = (date: Date) => {
         if(formData) {
             if(date <= formData.startDate) return;
-            const newData: ProjectCredentials = {
+            const newData: EditProjectCredentials = {
                ...formData,
                endDate: date
             };
@@ -56,7 +56,7 @@ const EditProjectPage = () => {
     }
 
     const handleSubmit = async () => {
-        if(!projectId || !formData) return;
+        if(!projectId || !formData) return
         await projectService.editProject(projectId, formData);
         window.location.reload();
     }

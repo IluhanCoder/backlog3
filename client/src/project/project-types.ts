@@ -35,6 +35,14 @@ export interface ProjectCredentials {
     daysPerWeek: number
 }
 
+export interface EditProjectCredentials {
+    name: string,
+    daysPerWeek: number,
+    hoursPerDay: number,
+    startDate: Date,
+    endDate: Date,
+}
+
 export interface Parameters {
     integration: boolean,
     support: boolean,
