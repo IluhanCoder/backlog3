@@ -145,15 +145,22 @@ exports.default = new class AnalyticsService {
     // Predict ratio for future months using linear regression
     predictRatio(projectId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const tasks = yield this.taskRatio(projectId, new Date(2024, 0, 1), new Date(2025, 0, 1), false, userId);
-            const months = tasks.map(entry => entry.month);
+            const tasks = yield this.taskRatio(projectId, new Date(2025, 0, 1), new Date(2026, 1, 0), false, userId);
+            console.log("Task Ratios:", tasks); // Перевіряємо, які дані надходять
+            const months = tasks.map(entry => entry.month); // Очікує числа 1-12
             const ratios = tasks.map(entry => entry.amount);
+            // Якщо всі значення нулі, не запускаємо регресію
+            if (ratios.every(r => r === 0)) {
+                console.warn("All ratios are zero. Regression may not work properly.");
+                return months.map(month => ({ year: 2025, month, amount: 0 }));
+            }
             const regression = new ml_regression_simple_linear_1.SimpleLinearRegression(months, ratios);
             const predictedRatios = [];
-            for (let month = 0; month <= 11; month++) {
+            for (let month = 1; month <= 12; month++) {
                 const predictedRatio = regression.predict(month);
                 predictedRatios.push({ year: 2025, month, amount: predictedRatio });
             }
+            console.log("Predicted Ratios:", predictedRatios);
             return predictedRatios;
         });
     }
@@ -221,8 +228,13 @@ exports.default = new class AnalyticsService {
     }
     accumulateAmounts(stats) {
         let cumulativeAmount = 0;
-        return stats.map(entry => {
-            cumulativeAmount += entry.amount;
+        return stats.map((entry, index) => {
+            if (index === 0) {
+                cumulativeAmount = entry.amount; // Початкове значення
+            }
+            else {
+                cumulativeAmount += entry.amount; // Накопичуємо
+            }
             return Object.assign(Object.assign({}, entry), { amount: cumulativeAmount });
         });
     }
@@ -243,22 +255,28 @@ exports.default = new class AnalyticsService {
         });
     }
     calculateCumulativeRatios(stats, tasks) {
-        let cumulativeDone = 0;
-        let cumulativeTotal = 0;
         return stats.map(entry => {
-            // Filter tasks created up to the current entry's month or day
+            const currentDate = new Date(entry.year, entry.month - 1, entry.day || 1);
+            console.log("Processing date:", entry.year, entry.month, entry.day, "=>", currentDate.toISOString());
+            // Фільтруємо задачі, створені ДО або НА поточний період
             const tasksUntilNow = tasks.filter(task => {
-                return this.isBeforeOrSame(task.created, new Date(entry.year, entry.month - 1, entry.day || 1));
+                const taskCreated = new Date(task.created);
+                return taskCreated.getFullYear() < currentDate.getFullYear() ||
+                    (taskCreated.getFullYear() === currentDate.getFullYear() && taskCreated.getMonth() <= currentDate.getMonth());
             });
-            console.log(new Date(entry.year, entry.month - 1, entry.day || 1));
-            const doneTasks = tasksUntilNow.filter(task => (task.status === "done" && this.isBeforeOrSame(task.checkedDate, new Date(entry.year, entry.month - 1, entry.day || 1)))).length;
-            cumulativeDone = doneTasks; // Update cumulative done count
-            cumulativeTotal = tasksUntilNow.length; // Update total tasks count
-            console.log("done: " + cumulativeDone);
-            console.log("total: " + cumulativeTotal);
-            // Calculate the ratio (percentage of done tasks)
-            const ratio = cumulativeTotal > 0 ? (cumulativeDone / cumulativeTotal) * 100 : 0;
-            console.log("ratio: " + ratio);
+            if (tasksUntilNow.length === 0) {
+                console.log(`No tasks before ${currentDate.toISOString()}, ratio = 0`);
+                return Object.assign(Object.assign({}, entry), { amount: 0 });
+            }
+            // Фільтруємо виконані задачі
+            const doneTasks = tasksUntilNow.filter(task => {
+                if (!task.checkedDate)
+                    return false;
+                const taskChecked = new Date(task.checkedDate);
+                return taskChecked <= currentDate;
+            }).length;
+            const ratio = (doneTasks / tasksUntilNow.length) * 100;
+            console.log(`Tasks until ${currentDate.toISOString()}: Total = ${tasksUntilNow.length}, Done = ${doneTasks}, Ratio = ${ratio}`);
             return Object.assign(Object.assign({}, entry), { amount: ratio });
         });
     }
@@ -266,27 +284,37 @@ exports.default = new class AnalyticsService {
         return (date1.getMonth() < date2.getMonth() ||
             (date1.getMonth() === date2.getMonth() && date1.getDate() <= date2.getDate()));
     }
-    generateStatistics(tasks, startDate, endDate, isDaily, dateExtractor, options) {
+    generateStatistics(tasks, startDate, endDate, isDaily, dateExtractor) {
         const statsMap = {};
+        // Генеруємо список дат у заданому діапазоні
+        const currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
+            const key = isDaily
+                ? `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, "0")}-${currentDate.getDate().toString().padStart(2, "0")}`
+                : `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, "0")}`;
+            statsMap[key] = { amount: 0 };
+            // Оновлюємо дату
+            if (isDaily) {
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            else {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+            }
+        }
+        // Додаємо таски в правильні групи
         tasks.forEach(task => {
             const date = dateExtractor(task);
             const key = isDaily
-                ? `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-                : `${date.getFullYear()}-${date.getMonth() + 1}`;
-            if (!statsMap[key]) {
-                statsMap[key] = { done: 0, total: 0 };
-            }
-            statsMap[key].total++;
-            if (task.status === 'done') {
-                statsMap[key].done++;
-            }
+                ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`
+                : `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}`;
+            if (!statsMap[key])
+                return; // Пропускаємо значення поза діапазоном
+            statsMap[key].amount++;
         });
-        const range = this.generateDateRange(startDate, endDate, isDaily);
-        return range.map(({ year, month, day }) => {
-            const key = isDaily ? `${year}-${month}-${day}` : `${year}-${month}`;
-            const { done, total } = statsMap[key] || { done: 0, total: 0 };
-            const amount = (options === null || options === void 0 ? void 0 : options.ratio) && total > 0 ? Math.round((done / total) * 100) : total;
-            return { year, month, day, amount };
+        return Object.entries(statsMap).map(([key, value]) => {
+            const [year, month, day] = key.split("-").map(Number);
+            return Object.assign(Object.assign({ year,
+                month }, (isDaily && { day })), { amount: value.amount });
         });
     }
     generateDateRange(startDate, endDate, isDaily) {
